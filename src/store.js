@@ -1,10 +1,10 @@
 
 import {createStore} from "redux";
 import createReducer from "./reducer";
-import {initialState} from "./constants";
+import {lhsApi} from "./constants";
 
 const configureStore = () => {
-    return createStore(createReducer(), initialState);
+    return createStore(createReducer(), {dimMetrics: lhsApi});
 };
 
 export default configureStore;

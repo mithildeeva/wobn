@@ -8,10 +8,12 @@ const SingleSelectDropdown = (props) => {
         availableValues: props.availableValues,
     });
 
+    console.log(props);
+
     const onSelect = (e) => {
         const selectedValueArr = e.target.value.split('~~');
         // if value changed to itself
-        if (state.selected.id === selectedValueArr[0]) return;
+        if (state.selectedRhs && state.selected.id === selectedValueArr[0]) return;
 
         const selected = {id: selectedValueArr[0], label: selectedValueArr[1]};
 
@@ -34,8 +36,8 @@ const SingleSelectDropdown = (props) => {
         return (
             <option
                 value="select_placeholder"
-                disabled
-                selected
+                // disabled
+                // selected
                 hidden
             >
                 {props.placeholder ? props.placeholder : 'select an option'}
@@ -56,10 +58,11 @@ const SingleSelectDropdown = (props) => {
 
     return (
         <div className="single-select-dropdown">
-            <select onChange={onSelect}>
+            <select onChange={onSelect} defaultValue={props.placeholder ? props.placeholder : 'select an option'}>
                 {state.selected === null ? getPlaceholderOption() : getSelectedOption()}
                 {state.availableValues.map((valueObj, index) => (
                     <option
+                        key={valueObj.id}
                         value={`${valueObj.id}~~${valueObj.label}`}
                     >
                         {valueObj.label}

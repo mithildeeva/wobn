@@ -1,10 +1,12 @@
 // actions start --------------
 export const UPDATE_FILTER_IN_LIST = 'UPDATE_FILTER_IN_LIST';
+export const ADD_EMPTY_FILTER = 'ADD_EMPTY_FILTER';
+export const REMOVE_EMPTY_FILTER = 'REMOVE_EMPTY_FILTER';
 
 // actions end ----------------
 export const FREE_FORM_VALUE = 'FREE_FORM_VALUE';
 // initial state
-export const initialState = {
+export const lhsApi = {
     lhs: {
         'account': {
             label: 'Account',
@@ -4089,7 +4091,6 @@ export const initialState = {
             },
         ],
         FREE_FORM_VALUE,
-        //todo: remove all repeating ids
         [
             {
                 'label': "Israel",

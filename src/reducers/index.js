@@ -1,10 +1,17 @@
 import {produce} from "immer";
-import {initialState, UPDATE_FILTER_IN_LIST} from "../constants";
+import {ADD_EMPTY_FILTER, lhsApi, REMOVE_EMPTY_FILTER, UPDATE_FILTER_IN_LIST} from "../constants";
 
-const updateFilterList = produce((draftState = initialState, action) => {
+const filters = produce((draftState = {}, action) => {
     const {type, payload} = action;
     switch (type) {
+        case ADD_EMPTY_FILTER:
+            draftState.emptyFilter = true;
+            return draftState;
+        case REMOVE_EMPTY_FILTER:
+            draftState.emptyFilter = false;
+            return draftState;
         case UPDATE_FILTER_IN_LIST:
+            draftState.emptyFilter = false;
             // init the filterList's normalized data
             draftState.selectedLhs = draftState.selectedLhs === undefined ? [] : draftState.selectedLhs;
             draftState.selectedOps = draftState.selectedOps === undefined ? [] : draftState.selectedOps;
@@ -30,6 +37,11 @@ const updateFilterList = produce((draftState = initialState, action) => {
     }
 });
 
+const dimMetrics = produce((draftState = lhsApi) => {
+    return draftState
+});
+
 export {
-    updateFilterList,
+    dimMetrics,
+    filters,
 };

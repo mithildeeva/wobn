@@ -7,16 +7,17 @@ import MultiSelectDropdown from "../MultiSelectDropdown/index";
 import TextInput from "../TextInput/index";
 import NumberInput from "../NumberInput/index";
 
-const Filter = ({index = null, filterProp = {
-    lhs: null,
-    operator: null,
-    rhs: null,
-}, onFocusChange}) => {
-
+const Filter = props => {
+    const filterProp = props.filterData ? props.filterData : {
+        lhs: null,
+        operator: null,
+        rhs: null,
+    };
+    const index = props.index;
     const [filterState, setFilterState] = useState(filterProp);
     const availableLhs = useSelectAvailableLhs();
     // show available operators only when an lhs is selected
-    const availableOperators = useSelectAvailableOperator(filterState.lhs ? filterState.lhs : null);
+    const availableOperators = useSelectAvailableOperator(filterState.lhs ? filterState.lhs.id : null);
     // show rhs only when an operator is selected
     const availableRhs = useSelectAvailableRhs(filterState.operator ? filterState.lhs.id : null);
     const selectedRhs = useSelectSelectedRhs(filterState.operator ? index : null);
@@ -30,7 +31,7 @@ const Filter = ({index = null, filterProp = {
     };
 
     const lhsChanged = newLhs => {
-        let newFilter = Object.assign({}, filterState, {lhs: newLhs});
+        let newFilter = Object.assign({}, filterState, {lhs: newLhs, operator: null, rhs: null});
         processUpdate(newFilter);
     };
 

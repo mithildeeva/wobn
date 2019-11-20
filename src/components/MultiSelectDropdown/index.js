@@ -34,9 +34,9 @@ const MultiSelectDropdown = (props) => {
 
     const updateSelectForOption = (e) => {
         // id~~label
-        const option = e.target.id.split('~~');
+        const option = e.currentTarget.id.split('~~');
         const newOptions = dropdownState.options.map(item => {
-            if (option[0] === item.id) {
+            if (parseInt(option[0]) === item.id) {
                 item.checked = !item.checked;
             }
             return item;
@@ -51,8 +51,8 @@ const MultiSelectDropdown = (props) => {
                 id: option.id,
                 label: option.label,
             }));
-        props.onChange(selectedOptions.length === 0 ? null : selectedOptions);
         setDropdownState(Object.assign({}, dropdownState, {menuOpen: false}))
+        props.onChange(selectedOptions.length === 0 ? null : selectedOptions);
     };
 
     const handleCancelClick = () => {
@@ -93,38 +93,40 @@ const MultiSelectDropdown = (props) => {
 
     const getMenuBody = () => {
 
-        let options = [];
-        if (dropdownState.selected && dropdownState.selected.length > 0) {
-            const selectedOptions = dropdownState.selected.map((option) => (
-                <div className='menu-option'>
-                    <input type='checkbox' value={`${option.id}~~${option.label}`} checked/>
-                    <label className='checkbox-label'>
-                        {option.label}
-                    </label>
-                </div>
-            ));
-            options.push(...selectedOptions);
-        }
-
-        if (dropdownState.available && dropdownState.available.length > 0) {
-            const availableOptions = dropdownState.available.map(option => (
-                <div className='menu-option'>
-                    <input type='checkbox' value={`${option.id}~~${option.label}`} />
-                    <label className='checkbox-label'>
-                        {option.label}
-                    </label>
-                </div>
-            ));
-            options.push(...availableOptions);
-        }
+        // let options = [];
+        // if (dropdownState.selected && dropdownState.selected.length > 0) {
+        //     const selectedOptions = dropdownState.selected.map((option) => (
+        //         <div className='menu-option'>
+        //             <input type='checkbox' value={`${option.id}~~${option.label}`} checked/>
+        //             <label className='checkbox-label'>
+        //                 {option.label}
+        //             </label>
+        //         </div>
+        //     ));
+        //     options.push(...selectedOptions);
+        // }
+        //
+        // if (dropdownState.available && dropdownState.available.length > 0) {
+        //     const availableOptions = dropdownState.available.map(option => (
+        //         <div className='menu-option'>
+        //             <input type='checkbox' value={`${option.id}~~${option.label}`} />
+        //             <label className='checkbox-label'>
+        //                 {option.label}
+        //             </label>
+        //         </div>
+        //     ));
+        //     options.push(...availableOptions);
+        // }
 
         return (
             <div className='menu-body'>
                 {dropdownState.options.map((option, index) => (
-                    <div
-                        className='menu-option'
-                        onClick={updateSelectForOption}
-                    >
+                <div
+                    key={`${option.id}~~${option.label}`}
+                    className='menu-option'
+                    id={`${option.id}~~${option.label}`}
+                    onClick={updateSelectForOption}
+                >
                     <input
                         type='checkbox'
                         value={`${option.id}~~${option.label}`}

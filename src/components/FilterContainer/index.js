@@ -1,25 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import './index.scss';
-import { useSelectFilterList } from "./selector";
+import {useSelectEmptyFilter, useSelectFilterList} from "./selector";
 import Filter from "../Filter/index";
 import {useSelectAvailableLhs} from "../Filter/selector";
+import {useDispatch} from "react-redux";
+import {ADD_EMPTY_FILTER, REMOVE_EMPTY_FILTER} from "../../constants";
 
 
 const FilterContainer = () => {
 
     const filterList = useSelectFilterList();
     const availableLhs = useSelectAvailableLhs();
+    const emptyFilterPresent = useSelectEmptyFilter();
 
-    const [emptyFilter, setEmptyFilter] = useState(null);
+    const dispatch = useDispatch();
 
     const invisibleInput = (<input type='text' className='invisible-element'/>);
 
     const addNewFilter = () => {
-        setEmptyFilter({
-            lhs: null,
-            operator: null,
-            rhs: null,
-        })
+        dispatch({type: ADD_EMPTY_FILTER});
     };
 
     const removeFilter = index => {
@@ -27,13 +26,11 @@ const FilterContainer = () => {
     };
 
     const removeEmptyFilter = () => {
-        setEmptyFilter(null);
+        dispatch({type: REMOVE_EMPTY_FILTER});
     };
 
-    const hasEmptyFilter = () => emptyFilter !== null;
-
     const canAddFilter = () => {
-        return !hasEmptyFilter() && availableLhs && availableLhs.length !== 0;
+        return !emptyFilterPresent && availableLhs && availableLhs.length !== 0;
     };
 
     const onFocusChange = index => {
@@ -50,10 +47,14 @@ const FilterContainer = () => {
     };
 
     const getEmptyFilterJSX = () => {
-        if (emptyFilter === null) return ('');
+        if (!emptyFilterPresent) return ('');
         return (
-            <div className="filters">
-                <Filter index={null} filterData={emptyFilter} onFocusChange={onFocusChange}/>
+            <div className="filter empty-filter" key='empty-filter'>
+                <Filter index={null} filterData={{
+                    lhs: null,
+                    operator: null,
+                    rhs: null,
+                }} onFocusChange={onFocusChange}/>
                 <button className='btn-filter-remove' onClick={() => { removeEmptyFilter() }} key={`remove-empty-filter`}>
                     <i className="material-icons">close</i>
                 </button>
@@ -66,16 +67,17 @@ const FilterContainer = () => {
         <div className='filter-container'>
             <div className="filter-body">
                 <div className="filter-section">
-                    <div style="padding: 10px;">
+                    <div style={{padding:'10px'}}>
                         <h4>where</h4>
                     </div>
 
                     <div className="filters">
                         {
                             filterList.map((filter, index) => (
-                                <div className='filter'>
+                                <div className='filter filled-filter' key={index}>
 
                                     <Filter
+                                        key={`${index}-filter`}
                                         index={index}
                                         filterData={filter}
                                         onFocusChange={onFocusChange}
@@ -84,13 +86,13 @@ const FilterContainer = () => {
                                     {getCloseButton(index)}
                                 </div>
                             ))
-                            (getEmptyFilterJSX())
                         }
+                        {(getEmptyFilterJSX())}
                     </div>
                 </div>
 
                 <div>
-                    <button onClick={addNewFilter} disabled={canAddFilter}>
+                    <button onClick={addNewFilter} disabled={!canAddFilter()}>
                         <i className="material-icons btn-range-add-icon">add</i> Add
                     </button>
                 </div>
