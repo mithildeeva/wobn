@@ -1,7 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useRef, useEffect} from 'react';
 import './index.scss';
 
 const MultiSelectDropdown = (props) => {
+
+    const nodeRef = useRef(null);
 
     const getDropdownItems = () => {
         let items = [];
@@ -32,6 +34,19 @@ const MultiSelectDropdown = (props) => {
         menuOpen: false,
     });
 
+    const handleBlur = (e) => {
+        if (nodeRef.current.contains(e.target)) return;
+
+        setDropdownState(Object.assign({}, dropdownState, { menuOpen: false }));
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleBlur, false);
+        return () => {
+            document.removeEventListener('mousedown', handleBlur, false)
+        };
+    }, []);
+
     const updateSelectForOption = (e) => {
         // id~~label
         const option = e.currentTarget.id.split('~~');
@@ -51,7 +66,7 @@ const MultiSelectDropdown = (props) => {
                 id: option.id,
                 label: option.label,
             }));
-        setDropdownState(Object.assign({}, dropdownState, {menuOpen: false}))
+        setDropdownState(Object.assign({}, dropdownState, {menuOpen: false}));
         props.onChange(selectedOptions.length === 0 ? null : selectedOptions);
     };
 
@@ -177,7 +192,7 @@ const MultiSelectDropdown = (props) => {
     };
 
     return (
-        <div className='multi-drop-down-parent'>
+        <div className='multi-drop-down-parent' ref={nodeRef}>
             {getDropdownButton()}
             {getDropdownMenu()}
         </div>

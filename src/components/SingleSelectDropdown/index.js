@@ -1,15 +1,31 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import './index.scss';
 
 const SingleSelectDropdown = (props) => {
 
+    const nodeRef = useRef(null);
+
     const [state, setState] = useState({
         selected: props.selected,
         availableValues: props.availableValues,
+        menuOpen: false,
     });
 
+    const handleBlur = (e) => {
+        if (nodeRef.current.contains(e.target)) return;
+
+        setState(Object.assign({}, state, {menuOpen: false}));
+    };
+
+    useEffect(() => {
+        document.addEventListener('mousedown', handleBlur, false);
+        return () => {
+            document.removeEventListener('mousedown', handleBlur, false)
+        };
+    }, []);
+
     const onSelect = (e) => {
-        const selectedValueArr = e.target.value.split('~~');
+        const selectedValueArr = e.currentTarget.dataset.value.split('~~');
         // if value changed to itself
         if (state.selectedRhs && state.selected.id === selectedValueArr[0]) return;
 
@@ -24,62 +40,73 @@ const SingleSelectDropdown = (props) => {
         }
 
         // updating local state
-        setState(Object.assign({}, state, {selected, availableValues}));
+        setState(Object.assign({}, state, {selected, availableValues, menuOpen: false}));
 
         // calling onChange of parent with newly selected value obj
         props.onChange(selected);
     };
 
-    const getPlaceholderOption = () => {
-        return (
-            <option
-                value="select_placeholder"
-                // disabled
-                // selected
-                hidden
-            >
-                {props.placeholder ? props.placeholder : 'select an option'}
-            </option>
-        );
-    };
-
-    const getSelectedOption = () => {
-        return (
-            <option
-                value={`${state.selected.id}~~${state.selected.label}`}
-                selected
-            >
-                {state.selected.label}
-            </option>
-        );
+    const toggleDropdownMenu = () => {
+        setState(Object.assign({}, state, {
+            menuOpen: !state.menuOpen
+        }))
     };
 
     const getOptions = () => {
-        console.log(state.availableValues, state.selected);
-        const op = state.availableValues.map((valueObj) => {
-            if (state.selected && state.selected.id === valueObj.id) return getSelectedOption();
+        return state.availableValues.map((valueObj) => {
+            let isSelectedObj = state.selected && state.selected.id === valueObj.id;
             return (
-                <option
+
+                <div
                     key={valueObj.id}
-                    value={`${valueObj.id}~~${valueObj.label}`}
+                    data-value={`${valueObj.id}~~${valueObj.label}`}
+                    className={isSelectedObj ? 'menu-option selected' : 'menu-option'}
+                    onClick={onSelect}
                 >
-                    {valueObj.label}
-                </option>
+                    <div className='option-item'>
+                        <label className='label'>
+                            {valueObj.label}
+                        </label>
+                    </div>
+
+
+                </div>
             );
         });
+    };
 
-        console.log(op);
+    const getMenuBody = () => {
+        return (
+            <div className='menu-body'>
+                {getOptions()}
+            </div>
+        );
+    };
 
-        return op;
+    const getDropdownButton = () => {
+        return (
+            <div className='open-button' onClick={toggleDropdownMenu}>
+                <span>
+                    {state.selected ? state.selected.label : props.placeholder ? props.placeholder : 'select option'}
+                </span>
+                <div>^</div>
+            </div>
+        );
+    };
+
+    const getDropdownMenu = () => {
+        if (!state.menuOpen) return ('');
+        return (
+            <div className='menu'>
+                {getMenuBody()}
+            </div>
+        );
     };
 
     return (
-        <div className="single-select-dropdown">
-            <select onChange={onSelect} defaultValue={props.placeholder ? props.placeholder : 'select an option'}>
-                {state.selected === null ? getPlaceholderOption() : ('')}
-                {getOptions()}
-            </select>
-            <div className="select_arrow"></div>
+        <div className="single-drop-down-parent" ref={nodeRef}>
+            {getDropdownButton()}
+            {getDropdownMenu()}
         </div>
     );
 };
