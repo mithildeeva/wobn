@@ -2,7 +2,14 @@ import React, {useState} from 'react';
 
 const TextInput = (props) => {
 
+    const [inputState, setInputState] = useState({value: props.value ? props.value : ''});
+
     const handleChange = (e) => {
+        setInputState(e.target.value);
+    };
+
+    const keyPress = (e) => {
+        if (e.keyCode != 13) return;
         if (e.target.value === '') {
             props.onChange(null);
         } else {
@@ -14,8 +21,9 @@ const TextInput = (props) => {
         <div className='text-input'>
             <input
                 type='text'
-                value={props.value}
+                value={inputState.value}
                 placeholder={props.placeholder}
+                onKeyDown={keyPress}
                 onChange={handleChange}
             >
 

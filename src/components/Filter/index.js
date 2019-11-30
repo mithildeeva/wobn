@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import './index.scss'
 import {useDispatch} from 'react-redux';
 import {useSelectAvailableLhs, useSelectAvailableOperator, useSelectAvailableRhs, useSelectSelectedRhs} from "./selector";
 import {UPDATE_FILTER_IN_LIST} from "../../constants";
@@ -19,7 +20,7 @@ const Filter = props => {
     // show available operators only when an lhs is selected
     const availableOperators = useSelectAvailableOperator(filterState.lhs ? filterState.lhs.id : null);
     // show rhs only when an operator is selected
-    const availableRhs = useSelectAvailableRhs(filterState.operator ? filterState.lhs.id : null);
+    const availableRhs = useSelectAvailableRhs(filterState.lhs ? filterState.lhs.id : null);
     const selectedRhs = useSelectSelectedRhs(filterState.operator ? index : null);
     const dispatch = useDispatch();
 
@@ -63,6 +64,7 @@ const Filter = props => {
     const getLhsDropdown = () => {
         return (
             <SingleSelectDropdown
+                key={filterState.lhs ? filterState.lhs.id : 'empty-lhs'}
                 placeholder='dimension/metric'
                 selected={filterState.lhs}
                 availableValues={availableLhs}
@@ -76,6 +78,7 @@ const Filter = props => {
 
         return (
             <SingleSelectDropdown
+                key={filterState.operator ? filterState.operator : 'empty-op'}
                 placeholder='operator'
                 selected={filterState.operator}
                 availableValues={availableOperators}
@@ -85,13 +88,14 @@ const Filter = props => {
     };
 
     const getRhsJSX = () => {
-        if (availableRhs === null) return ('');
+        if (filterState.lhs === null) return ('');
 
         switch (filterState.lhs.id) {
             case 'account':
             case 'country':
                 return (
                     <MultiSelectDropdown
+                        key={filterState.rhs ? filterState.rhs.length : 'empty-rhs'}
                         placeholder={filterState.lhs.label}
                         selected={selectedRhs}
                         available={availableRhs}
@@ -101,6 +105,7 @@ const Filter = props => {
             case 'campaign_name':
                 return (
                     <TextInput
+                        key={filterState.rhs ? filterState.rhs : 'empty-rhs'}
                         placeholder='Enter Campaign'
                         value={selectedRhs}
                         onChange={rhsChanged}
@@ -109,6 +114,7 @@ const Filter = props => {
             case 'revenue':
                 return (
                     <NumberInput
+                        key={filterState.rhs ? filterState.rhs : 'empty-rhs'}
                         placeholder='Enter Number'
                         value={selectedRhs}
                         onChange={rhsChanged}
@@ -120,7 +126,7 @@ const Filter = props => {
     };
 
     return (
-        <div>
+        <div className='filter-row'>
             {getLhsDropdown()}
             {getOperatorDropdown()}
             {getRhsJSX()}

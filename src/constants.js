@@ -1,5 +1,6 @@
 // actions start --------------
 export const UPDATE_FILTER_IN_LIST = 'UPDATE_FILTER_IN_LIST';
+export const REMOVE_FILTER_FROM_LIST = 'REMOVE_FILTER_FROM_LIST';
 export const ADD_EMPTY_FILTER = 'ADD_EMPTY_FILTER';
 export const REMOVE_EMPTY_FILTER = 'REMOVE_EMPTY_FILTER';
 
@@ -4092,10 +4093,6 @@ export const lhsApi = {
         ],
         FREE_FORM_VALUE,
         [
-            {
-                'label': "Israel",
-                'id': "972"
-            },
             {
                 'label': "Afghanistan",
                 'id': "93"

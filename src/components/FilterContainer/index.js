@@ -4,7 +4,7 @@ import {useSelectEmptyFilter, useSelectFilterList} from "./selector";
 import Filter from "../Filter/index";
 import {useSelectAvailableLhs} from "../Filter/selector";
 import {useDispatch} from "react-redux";
-import {ADD_EMPTY_FILTER, REMOVE_EMPTY_FILTER} from "../../constants";
+import {ADD_EMPTY_FILTER, REMOVE_EMPTY_FILTER, REMOVE_FILTER_FROM_LIST} from "../../constants";
 
 
 const FilterContainer = () => {
@@ -22,7 +22,10 @@ const FilterContainer = () => {
     };
 
     const removeFilter = index => {
-        // todo: dispatch remove filter
+        dispatch({
+            type: REMOVE_FILTER_FROM_LIST,
+            payload: {index},
+        });
     };
 
     const removeEmptyFilter = () => {
@@ -48,6 +51,12 @@ const FilterContainer = () => {
 
     const getEmptyFilterJSX = () => {
         if (!emptyFilterPresent) return ('');
+        // no close button for the 1st empty filter (when there are no filters selected)
+        let closeButton = filterList.length === 0 ? '' : (
+            <button className='btn-filter-remove' onClick={() => { removeEmptyFilter() }} key={`remove-empty-filter`}>
+                <i className="material-icons">close</i>
+            </button>
+        );
         return (
             <div className="filter empty-filter" key='empty-filter'>
                 <Filter index={null} filterData={{
@@ -55,9 +64,7 @@ const FilterContainer = () => {
                     operator: null,
                     rhs: null,
                 }} onFocusChange={onFocusChange}/>
-                <button className='btn-filter-remove' onClick={() => { removeEmptyFilter() }} key={`remove-empty-filter`}>
-                    <i className="material-icons">close</i>
-                </button>
+                {closeButton}
             </div>
         );
     };
@@ -77,7 +84,12 @@ const FilterContainer = () => {
                                 <div className='filter filled-filter' key={index}>
 
                                     <Filter
-                                        key={`${index}-filter`}
+                                        key={`
+                                        ${filter.lhs.id}
+                                        -${filter.operator.id}
+                                        -${Array.isArray(filter.rhs) ? filter.rhs[0].id : filter.rhs}
+                                        -filter
+                                        `}
                                         index={index}
                                         filterData={filter}
                                         onFocusChange={onFocusChange}

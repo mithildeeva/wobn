@@ -36,7 +36,7 @@ const MultiSelectDropdown = (props) => {
         // id~~label
         const option = e.currentTarget.id.split('~~');
         const newOptions = dropdownState.options.map(item => {
-            if (parseInt(option[0]) === item.id) {
+            if (String(option[0]) === String(item.id)) {
                 item.checked = !item.checked;
             }
             return item;

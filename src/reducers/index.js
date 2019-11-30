@@ -1,7 +1,10 @@
 import {produce} from "immer";
-import {ADD_EMPTY_FILTER, lhsApi, REMOVE_EMPTY_FILTER, UPDATE_FILTER_IN_LIST} from "../constants";
+import {
+    ADD_EMPTY_FILTER, lhsApi, REMOVE_EMPTY_FILTER, REMOVE_FILTER_FROM_LIST,
+    UPDATE_FILTER_IN_LIST
+} from "../constants";
 
-const filters = produce((draftState = {}, action) => {
+const filters = produce((draftState = {emptyFilter: true}, action) => {
     const {type, payload} = action;
     switch (type) {
         case ADD_EMPTY_FILTER:
@@ -30,6 +33,12 @@ const filters = produce((draftState = {}, action) => {
             draftState.selectedLhs[payload.index] = payload.filter.lhs.id;
             draftState.selectedOps[payload.index] = payload.filter.operator.id;
             draftState.selectedRhs[payload.index] = payload.filter.rhs;
+
+            return draftState;
+        case REMOVE_FILTER_FROM_LIST:
+            draftState.selectedLhs.splice(payload.index, 1);
+            draftState.selectedOps.splice(payload.index, 1);
+            draftState.selectedRhs.splice(payload.index, 1);
 
             return draftState;
         default:
